@@ -108,6 +108,17 @@ exp.namelist = namelist = Namelist({
         'two_stream_gray': False,     #Use the grey radiation scheme
         'do_socrates_radiation': True,
         'convection_scheme': 'SIMPLE_BETTS_MILLER', #Use simple Betts miller convection            
+        'do_cloud_simple': True,
+    },
+
+    'cloud_simple_nml': {
+        'simple_cca':0.0,
+        'rhcsfc': 0.95,
+        'rhc700': 0.7,
+        'rhc200': 0.3,
+        'rhmsfc': 0.95,
+        'rhm700': 0.7,
+        'rhm200': 0.3,
     },
 
     'vert_turb_driver_nml': {
@@ -200,6 +211,7 @@ if __name__=="__main__":
         cb.compile()
         #Set up the experiment object, with the first argument being the experiment name.
         #This will be the name of the folder that the data will appear in.
+
         exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=False)
         for i in range(2,121):
             exp.run(i, num_cores=NCORES)
