@@ -4,7 +4,7 @@ import numpy as np
 
 from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
-NCORES = 8
+NCORES = 16
 base_dir = os.path.dirname(os.path.realpath(__file__))
 # a CodeBase can be a directory on the computer,
 # useful for iterative development
@@ -30,17 +30,41 @@ diag = DiagTable()
 diag.add_file('atmos_monthly', 30, 'days', time_units='days')
 
 #Tell model which diagnostics to write
-diag.add_field('dynamics', 'ps', time_avg=True)
-diag.add_field('dynamics', 'bk')
-diag.add_field('dynamics', 'pk')
-diag.add_field('atmosphere', 'precipitation', time_avg=True)
-diag.add_field('mixed_layer', 't_surf', time_avg=True)
-diag.add_field('dynamics', 'sphum', time_avg=True)
-diag.add_field('dynamics', 'ucomp', time_avg=True)
-diag.add_field('dynamics', 'vcomp', time_avg=True)
-diag.add_field('dynamics', 'temp', time_avg=True)
-diag.add_field('dynamics', 'vor', time_avg=True)
-diag.add_field('dynamics', 'div', time_avg=True)
+diag.add_field('dynamics', 'ps', time_avg=True, files=['atmos_monthly'])
+diag.add_field('dynamics', 'bk', files=['atmos_monthly'])
+diag.add_field('dynamics', 'pk', files=['atmos_monthly'])
+
+diag.add_field('dynamics',   'ucomp',             time_avg=True, files=['atmos_monthly'])
+diag.add_field('dynamics',   'vcomp',             time_avg=True, files=['atmos_monthly'])
+diag.add_field('dynamics',   'omega',             time_avg=True, files=['atmos_monthly'])
+diag.add_field('dynamics',   'temp',              time_avg=True, files=['atmos_monthly'])
+diag.add_field('dynamics',   'sphum',             time_avg=True, files=['atmos_monthly'])
+diag.add_field('atmosphere', 'precipitation',     time_avg=True, files=['atmos_monthly'])
+diag.add_field('atmosphere', 'convection_rain',   time_avg=True, files=['atmos_monthly'])
+diag.add_field('atmosphere', 'condensation_rain', time_avg=True, files=['atmos_monthly'])
+diag.add_field('atmosphere', 'rh',                time_avg=True, files=['atmos_monthly'])
+#Fluxes for budget
+diag.add_field('mixed_layer','flux_lhe',          time_avg=True, files=['atmos_monthly']) #for evap
+diag.add_field('two_stream','flux_t',    time_avg=True, files=['atmos_monthly']) #SH
+diag.add_field('two_stream','lwdn_sfc',   time_avg=True, files=['atmos_monthly']) #LWDS
+diag.add_field('two_stream','lwup_sfc',   time_avg=True, files=['atmos_monthly']) #LWUS
+diag.add_field('two_stream','olr',        time_avg=True, files=['atmos_monthly']) #LWUT (OLD)
+diag.add_field('two_stream','flux_sw',    time_avg=True, files=['atmos_monthly']) #needed for SWUS and SWUT
+diag.add_field('two_stream','swdn_sfc',   time_avg=True, files=['atmos_monthly']) #SWDS
+diag.add_field('two_stream','swdn_toa',   time_avg=True, files=['atmos_monthly']) #SWDT
+
+diag.add_file('atmos_daily', 1, 'days', time_units='days')
+
+diag.add_field('dynamics', 'ps', time_avg=True, files=['atmos_daily'])
+diag.add_field('dynamics', 'bk', files=['atmos_daily'])
+diag.add_field('dynamics', 'pk', files=['atmos_daily'])
+
+diag.add_field('dynamics',   'temp',              time_avg=True, files=['atmos_daily'])
+diag.add_field('atmosphere', 'precipitation',     time_avg=True, files=['atmos_daily'])
+diag.add_field('atmosphere', 'convection_rain',   time_avg=True, files=['atmos_daily'])
+diag.add_field('atmosphere', 'condensation_rain', time_avg=True, files=['atmos_daily'])
+diag.add_field('atmosphere', 'rh',                time_avg=True, files=['atmos_daily'])
+
 
 exp.diag_table = diag
 
@@ -100,7 +124,7 @@ exp.namelist = namelist = Namelist({
         'tconst' : 285.,
         'prescribe_initial_dist':True,
         'evaporation':True,   
-        'depth': 2.5,                          #Depth of mixed layer used
+        'depth': 20,                          #Depth of mixed layer used
         'albedo_value': 0.31,                  #Albedo value used             
     },
 
@@ -171,8 +195,11 @@ exp.namelist = namelist = Namelist({
        }
 })
 
+resolution = 'T42', 25  #T85?
+
 #Lets do a run!
 if __name__=="__main__":
-    exp.run(1, use_restart=False, num_cores=NCORES)
-    for i in range(2,121):
+    exp.set_resolution(*resolution)
+    exp.run(1, use_restart=False, num_cores=NCORES,overwrite_data=True)
+    for i in range(2,85):
         exp.run(i, num_cores=NCORES)
