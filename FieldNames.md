@@ -31,15 +31,14 @@
 |mixed_layer | albedo | surface albedo | (lat, lon) | static | |
 |mixed_layer | ml_heat_cap | mixed layer heat capacity | (lat, lon) |  | |
 |mixed_layer |	flux_lhe	| latent heat flux up at surface	| (lat,lon) | | |
-|mixed_layer |	flux_sw	| Net shortwave radiative flux (positive up)	| (phalf,lat,lon) | | |
-|mixed_layer |	flux_lw	| Net longwave radiative flux (positive up)	 | (phalf,lat,lon) | | |
+|mixed_layer |	flux_t	| sensible heat flux up at surface	| (lat,lon) | | |
 |atmosphere |	rh	  | relative humidity |	(pfull, lat, lon)	| | |
 |atmosphere |	convection_rain	| Rain from convection scheme	| (lat, lon)	| | |
 |atmosphere |	condensation_rain |	Large scale resolved rain	| (lat, lon)	| | |
 |atmosphere |	precipitation |	Sum of resolved rain, resolved snow and parameterised rain 	| (lat, lon)	| | |
 |rrtm_radiation |  z_thalf 	|   	|   	|   	| |
-|rrtm_radiation |	flux_sw	| Net short wave surface flux	| (lat, lon)	| | |
-|rrtm_radiation |	flux_lw	| Long wave surface flux	| (lat, lon)	| | |
+|rrtm_radiation, two_stream  |	flux_sw	| Net short wave surface flux	| (lat, lon)	| | see also swdn_sfc, swdn_toa |
+|rrtm_radiation, two_stream   |	flux_lw	| Net long wave surface flux	| (lat, lon)	| | see also lwdn_sfc, lwup_sfc, olr|
 |rrtm_radiation |	rrtm_albedo	 |Interactive albedo	| (lat, lon)	| | |
 |rrtm_radiation | 	tdt_sw	 | Temperature tendency due to SW radiation	| (pfull, lat, lon)	| | |
 |rrtm_radiation |	tdt_lw	| Temperature tendency due to LW radiation	| (pfull, lat, lon)	| | |
