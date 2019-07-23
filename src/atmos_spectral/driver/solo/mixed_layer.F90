@@ -107,7 +107,7 @@ logical :: do_qflux         = .false. !mj
 logical :: do_warmpool      = .false. !mj
 logical :: do_read_sst      = .false. !mj
 logical :: do_sc_sst        = .false. !mj
-logical :: do_analytic_sst  = .false. 
+logical :: do_ape_sst  = .false. 
 logical :: specify_sst_over_ocean_only = .false.
 character(len=256) :: sst_file
 character(len=256) :: land_option = 'none'
@@ -133,7 +133,7 @@ namelist/mixed_layer_nml/ evaporation, depth, qflux_amp, qflux_width, tconst,&
 			                  do_qflux,do_warmpool,              &  !mj
                               albedo_choice,higher_albedo,albedo_exp,        &  !mj
                               albedo_cntr,albedo_wdth,lat_glacier,           &  !mj
-                              do_read_sst,do_sc_sst,do_analytic_sst,sst_file,&  !mj
+                              do_read_sst,do_sc_sst,do_ape_sst,sst_file,     &  !mj
                               land_option,slandlon,slandlat,                 &  !mj
                               elandlon,elandlat,                             &  !mj
                               land_h_capacity_prefactor,                     &  !s
@@ -660,7 +660,7 @@ if(do_sc_sst) then !mj sst read from input file
 	 endif
 end if
 
-if(do_analytic_sst) then 
+if(do_ape_sst) then 
     ! use analytic form for setting SST at each timestep.
     ! see appendix equation 1 of Neale and Hoskins 2000
     !     "A standard test for AGCMs including their 
@@ -668,20 +668,20 @@ if(do_analytic_sst) then
     ! using a constant longitude.
     do j=js,je   
         if ( (rad_lat_2d(1,j) .gt. -PI/3.) .and. (rad_lat_2d(1,j) .lt. PI/3.) ) then 
-            !between 60N-60S
+            ! between 60N-60S
             sst_new(:,j) = KELVIN+( 27.0*( 1 - (sin( 3./2. * rad_lat_2d(:,j) )**2 ) ))  
             !write(6,*) 'SST profile', rad_lat_2d(1,j)*180/PI, ' j:', j, ' sst:', sst_new(1,j)
         else
-            !from 60N/S to pole
+            ! from 60N/S to pole
             sst_new(:,j) = KELVIN
             !write(6,*) 'SST is zero', rad_lat_2d(1,j)*180/PI, ' j:', j, ' sst:', sst_new(1,j)
         endif
     enddo
     delta_t_surf = sst_new - t_surf
-	t_surf = sst_new
+    t_surf = sst_new
 endif
 
-if ((.not.do_sc_sst).or.(do_sc_sst.and.specify_sst_over_ocean_only) .or. .not.(do_analytic_sst)) then
+if ((.not.do_sc_sst).or.(do_sc_sst.and.specify_sst_over_ocean_only) .or. .not.(do_ape_sst)) then
   !s use the land_sea_heat_capacity calculated in mixed_layer_init
 
 	! Now update the mixed layer surface temperature using an implicit step

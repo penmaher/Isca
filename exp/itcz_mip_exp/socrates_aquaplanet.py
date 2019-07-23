@@ -3,7 +3,6 @@ import os
 import numpy as np
 
 from isca import SocratesCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
-from isca.util import exp_progress
 
 NCORES = 8
 base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -23,7 +22,7 @@ cb = SocratesCodeBase.from_directory(GFDL_BASE)
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
 
-exp = Experiment('ITCZ-MIP_aqua_sst', codebase=cb)
+exp = Experiment('ITCZ-MIP_aqua_sst_soc', codebase=cb)
 exp.clear_rundir()
 
 inputfiles = [os.path.join(GFDL_BASE,'input/rrtm_input_files/ozone_1990.nc')]
@@ -129,7 +128,7 @@ exp.namelist = namelist = Namelist({
         'evaporation':True,  
         'depth': 10.0,                          #Depth of mixed layer used
         'albedo_value': 0.38,                   #Albedo value used      
-        'do_analytic_sst': True,
+        'do_ape_sst': True,
     },
 
     'qe_moist_convection_nml': {
