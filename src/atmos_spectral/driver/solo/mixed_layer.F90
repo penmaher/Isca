@@ -130,7 +130,7 @@ namelist/mixed_layer_nml/ evaporation, depth, qflux_amp, qflux_width, tconst,&
                               delta_T, prescribe_initial_dist,albedo_value,  &
                               land_depth,trop_depth,                         &  !mj
                               trop_cap_limit, heat_cap_limit, np_cap_factor, &  !mj
-			                  do_qflux,do_warmpool,                          &  !mj
+			                  do_qflux,do_warmpool,              &  !mj
                               albedo_choice,higher_albedo,albedo_exp,        &  !mj
                               albedo_cntr,albedo_wdth,lat_glacier,           &  !mj
                               do_read_sst,do_sc_sst,do_analytic_sst,sst_file,&  !mj
