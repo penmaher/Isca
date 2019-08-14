@@ -51,7 +51,9 @@ diag.add_field('atmosphere', 'rh',                files=['atmos_monthly'], time_
 diag.add_field('atmosphere',   'flux_u', files=['atmos_monthly'], time_avg=True) #tauu - zonal component of stress
 diag.add_field('atmosphere',   'flux_v', files=['atmos_monthly'], time_avg=True) #tauv
 
-#surface winds to come fter code merged in
+#surface winds
+diag.add_field('atmosphere',   'temp_2m', files=['atmos_monthly'], time_avg=True) 
+diag.add_field('atmosphere',   'q_2m', files=['atmos_monthly'], time_avg=True) 
 
 #common variables
 diag.add_field('dynamics',    'sphum',  time_avg=True) #hus
