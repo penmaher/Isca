@@ -4,7 +4,7 @@ import numpy as np
 
 from isca import SocratesCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
-NCORES = 32
+NCORES = 16  #32 is max for gv3
 base_dir = os.path.dirname(os.path.realpath(__file__))
 # a CodeBase can be a directory on the computer,
 # useful for iterative development
@@ -22,7 +22,7 @@ cb = SocratesCodeBase.from_directory(GFDL_BASE)
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
 
-exp = Experiment('ITCZ-MIP_aqua_sst_soc', codebase=cb)
+exp = Experiment('ITCZ-MIP_aqua_sst_soc_low_res_slab', codebase=cb)
 exp.clear_rundir()
 
 inputfiles = [os.path.join(GFDL_BASE,'input/rrtm_input_files/ozone_1990.nc')]
@@ -30,36 +30,58 @@ inputfiles = [os.path.join(GFDL_BASE,'input/rrtm_input_files/ozone_1990.nc')]
 #Tell model how to write diagnostics
 diag = DiagTable()
 diag.add_file('atmos_monthly', 30, 'days', time_units='days')
-#diag.add_file('atmos_daily',    1, 'days', time_units='days')
+diag.add_file('atmos_daily',    1, 'days', time_units='days')
 
-#Tell model which diagnostics to write
-diag.add_field('dynamics',    'ps', time_avg=True)
+#when not an aquaplanet, you need to interpolate vertically!
+diag.add_field('dynamics',    'ps', time_avg=True) #ps
 diag.add_field('dynamics',    'bk')
 diag.add_field('dynamics',    'pk')
+diag.add_field('dynamics',    'zsurf', time_avg=True) 
 
-diag.add_field('mixed_layer', 't_surf', time_avg=True)
-diag.add_field('mixed_layer', 'flux_t', time_avg=True)   #SH
-diag.add_field('mixed_layer', 'flux_lhe', time_avg=True) #LH - this is evap if / L_v
-diag.add_field('mixed_layer', 'albedo', time_avg=True) 
+diag.add_field('mixed_layer', 't_surf',   files=['atmos_monthly'], time_avg=True) #ts
+diag.add_field('mixed_layer', 'flux_t',                            time_avg=True) #hfls
+diag.add_field('mixed_layer', 'flux_lhe',                          time_avg=True) #hfss - LH is evap if / L_v
+diag.add_field('mixed_layer', 'albedo',   files=['atmos_monthly'], time_avg=True) 
 
-diag.add_field('atmosphere',  'precipitation', files=['atmos_monthly'], time_avg=True)
-diag.add_field('atmosphere', 'condensation_rain', time_avg=True) #large-scale
-diag.add_field('atmosphere', 'rh',                                      time_avg=True)
+diag.add_field('atmosphere', 'precipitation',     time_avg=True) #pr
+diag.add_field('atmosphere', 'condensation_rain', time_avg=True) #pr-pc
+diag.add_field('atmosphere', 'rh',                files=['atmos_monthly'], time_avg=True) #hur
 
-diag.add_field('dynamics',    'sphum', time_avg=True)
-diag.add_field('dynamics',    'ucomp', time_avg=True)
-diag.add_field('dynamics',    'vcomp', time_avg=True)
-diag.add_field('dynamics',    'omega', time_avg=True)
-diag.add_field('dynamics',    'temp',  time_avg=True)
-diag.add_field('dynamics',    'zsurf', time_avg=True)
+#surface wind stress
+diag.add_field('atmosphere',   'flux_u', files=['atmos_monthly'], time_avg=True) #tauu - zonal component of stress
+diag.add_field('atmosphere',   'flux_v', files=['atmos_monthly'], time_avg=True) #tauv
 
-diag.add_field('socrates', 'soc_tdt_lw',       time_avg=True)
-diag.add_field('socrates', 'soc_tdt_sw',       time_avg=True)
-diag.add_field('socrates', 'soc_tdt_rad',      time_avg=True)
-diag.add_field('socrates', 'soc_surf_flux_lw', time_avg=True)
-diag.add_field('socrates', 'soc_surf_flux_sw', time_avg=True)
-diag.add_field('socrates', 'soc_olr',          time_avg=True)
-diag.add_field('socrates', 'soc_toa_sw',       time_avg=True)
+#surface winds to come fter code merged in
+
+#common variables
+diag.add_field('dynamics',    'sphum',  time_avg=True) #hus
+diag.add_field('dynamics',    'ucomp',  time_avg=True) #ua
+diag.add_field('dynamics',    'vcomp',  time_avg=True) #va
+diag.add_field('dynamics',    'omega',  time_avg=True) #wap
+diag.add_field('dynamics',    'temp',   time_avg=True) #ta
+diag.add_field('dynamics',    'height', time_avg=True) #zg
+
+#radiative fluxes
+diag.add_field('socrates', 'soc_surf_flux_lw',      files=['atmos_monthly'], time_avg=True) #net
+diag.add_field('socrates', 'soc_surf_flux_lw_down', files=['atmos_monthly'], time_avg=True) 
+
+diag.add_field('socrates', 'soc_olr',               files=['atmos_monthly'], time_avg=True)
+
+diag.add_field('socrates', 'soc_surf_flux_sw',      files=['atmos_monthly'], time_avg=True) #net
+diag.add_field('socrates', 'soc_surf_flux_sw_down', files=['atmos_monthly'], time_avg=True)
+
+diag.add_field('socrates', 'soc_toa_sw',            files=['atmos_monthly'], time_avg=True) #net
+diag.add_field('socrates', 'soc_toa_sw_down',       files=['atmos_monthly'], time_avg=True)
+
+#tendencies
+diag.add_field('socrates', 'soc_tdt_lw',            files=['atmos_monthly'], time_avg=True)
+diag.add_field('socrates', 'soc_tdt_sw',            files=['atmos_monthly'], time_avg=True)
+diag.add_field('socrates', 'soc_tdt_rad',           files=['atmos_monthly'], time_avg=True) 
+
+#needed for eddy flux terms
+diag.add_field('dynamics', 'ucomp_vcomp', files=['atmos_monthly'], time_avg=True)
+diag.add_field('dynamics', 'sphum_v',     files=['atmos_monthly'], time_avg=True)
+diag.add_field('dynamics', 'vcomp_temp',  files=['atmos_monthly'], time_avg=True)
 
 exp.diag_table = diag
 exp.inputfiles = inputfiles
@@ -71,7 +93,7 @@ exp.namelist = namelist = Namelist({
      'hours'  : 0,
      'minutes': 0,
      'seconds': 0,
-     'dt_atmos':600,
+     'dt_atmos':720,
      'current_date' : [1,1,1,0,0,0],
      'calendar' : 'thirty_day'
     },
@@ -137,7 +159,7 @@ exp.namelist = namelist = Namelist({
         'evaporation':True,  
         'depth': 10.0,                          #Depth of mixed layer used
         'albedo_value': 0.38,                   #Albedo value used      
-        'do_ape_sst': True,
+        'do_ape_sst': False,
     },
 
     'qe_moist_convection_nml': {
@@ -197,8 +219,11 @@ exp.namelist = namelist = Namelist({
 if __name__=="__main__":
 
         cb.compile(debug=False)
-        exp.set_resolution('T85')
-        #exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=True)#, run_idb=True)
+        exp.set_resolution('T42')
+        exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=False)#, run_idb=True)
 
-        for i in range(29,384): #all runs should be 30 years + spin up
-            exp.run(i, num_cores=NCORES, overwrite_data=True)
+        for i in range(2,120): #all runs should be 30 years + spin up
+            exp.run(i, num_cores=NCORES, overwrite_data=False)
+
+
+
