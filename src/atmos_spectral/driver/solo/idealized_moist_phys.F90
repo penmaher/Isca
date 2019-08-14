@@ -260,7 +260,9 @@ integer ::           &
      id_diss_heat_ray,&  ! Heat dissipated by rayleigh bottom drag if gp_surface=.True.
      id_z_tg,        &   ! Relative humidity
      id_cape,        &
-     id_cin
+     id_cin,         &
+     id_flux_u,      &
+     id_flux_v
 
 integer, allocatable, dimension(:,:) :: convflag ! indicates which qe convection subroutines are used
 real,    allocatable, dimension(:,:) :: rad_lat, rad_lon
@@ -606,6 +608,11 @@ id_cape = register_diag_field(mod_name, 'cape',          &
      axes(1:2), Time, 'Convective Available Potential Energy','J/kg')
 id_cin = register_diag_field(mod_name, 'cin',          &
      axes(1:2), Time, 'Convective Inhibition','J/kg')
+
+id_flux_u = register_diag_field(mod_name, 'flux_u',          &
+     axes(1:2), Time, 'Zonal momentum flux','Pa')
+id_flux_v = register_diag_field(mod_name, 'flux_v',          &
+     axes(1:2), Time, 'Meridional momentum flux','Pa')
 
 if(bucket) then
   id_bucket_depth = register_diag_field(mod_name, 'bucket_depth',            &         ! RG Add bucket
@@ -983,6 +990,10 @@ call surface_flux(                                                          &
                                     land(:,:),                              &
                                .not.land(:,:),                              &
                                    avail(:,:)  )
+
+   if(id_flux_u  > 0) used = send_data(id_flux_u, flux_u, Time)
+   if(id_flux_v  > 0) used = send_data(id_flux_v, flux_v, Time)
+
 endif
 
 ! Now complete the radiation calculation by computing the upward and net fluxes.
