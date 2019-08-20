@@ -634,11 +634,6 @@ id_flux_u = register_diag_field(mod_name, 'flux_u', &
 id_flux_v = register_diag_field(mod_name, 'flux_v', &
      axes(1:2), Time, 'Meridional momentum flux', 'Pa')
 
-id_flux_u = register_diag_field(mod_name, 'flux_u',          &
-     axes(1:2), Time, 'Zonal momentum flux','Pa')
-id_flux_v = register_diag_field(mod_name, 'flux_v',          &
-     axes(1:2), Time, 'Meridional momentum flux','Pa')
-
 if(bucket) then
   id_bucket_depth = register_diag_field(mod_name, 'bucket_depth',            &         ! RG Add bucket
        axes(1:2), Time, 'Depth of surface reservoir', 'm')
@@ -1058,7 +1053,6 @@ if(.not.gp_surface) then
 
   if(id_q_2m > 0) used = send_data(id_q_2m, q_2m, Time)           ! Add 2m specific humidity
   if(id_rh_2m > 0) used = send_data(id_rh_2m, rh_2m*1e2, Time)    ! Add 2m relative humidity
->>>>>>> master
 
 endif
 
