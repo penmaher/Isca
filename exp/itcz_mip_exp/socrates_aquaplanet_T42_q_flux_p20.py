@@ -231,10 +231,10 @@ if __name__=="__main__":
 
         cb.compile(debug=False)
         exp.set_resolution('T42')
-        exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=False)#, run_idb=True)
+        exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=True)#, run_idb=True)
 
         for i in range(2,385): #all runs should be 30 years + spin up
-            exp.run(i, num_cores=NCORES, overwrite_data=False)
+            exp.run(i, num_cores=NCORES, overwrite_data=True)
 
 
 

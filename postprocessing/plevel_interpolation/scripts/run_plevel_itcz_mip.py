@@ -8,10 +8,10 @@ import subprocess
 
 start_time=time.time()
 base_dir='/scratch/pm366/OutputIsca'
-exp_name_list = ['ITCZ-MIP_aqua_sst_soc_low_res_p20']
-avg_or_daily_list=['monthly']
+exp_name_list = ['ITCZ-MIP_aqua_sst_soc_low_res_m20_4CO2']
+avg_or_daily_list=['daily']
 start_file=1
-end_file=24
+end_file=384
 nfiles=(end_file-start_file)+1
 
 do_extra_averaging=False #If true, then 6hourly data is averaged into daily data using cdo
@@ -52,7 +52,7 @@ elif level_set=='era_int':
     plevs['daily']  =' -p "10000 15000 20000 25000 30000 35000 40000 45000 50000 55000 60000 65000 70000 75000 80000 85000  90000  95000  97500  100000"'
 
     var_names['monthly']='-a height'
-    var_names['daily']='-a'
+    var_names['daily']='-a height'
 
     file_suffix='_interp_all'
 

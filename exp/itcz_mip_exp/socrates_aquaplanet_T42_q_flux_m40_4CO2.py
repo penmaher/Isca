@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-from isca import SocratesCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
+from isca import SocratesCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE, GFDL_DATA
 
 NCORES = 16  #32 is max for gv3
 base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -22,10 +22,13 @@ cb = SocratesCodeBase.from_directory(GFDL_BASE)
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
 
-exp = Experiment('ITCZ-MIP_aqua_sst_soc_low_res_take2', codebase=cb)
+project = 'ITCZ-MIP_aqua_sst_soc_low_res'
+
+exp = Experiment(project+'_m40_4CO2', codebase=cb)
 exp.clear_rundir()
 
-inputfiles = [os.path.join(GFDL_BASE,'input/rrtm_input_files/ozone_1990.nc')]
+inputfiles = [os.path.join(GFDL_BASE,'input/rrtm_input_files/ozone_1990.nc'),
+              os.path.join(GFDL_DATA,project+'/itcz_mip_q_flux.nc')]
 
 #Tell model how to write diagnostics
 diag = DiagTable()
@@ -112,7 +115,7 @@ exp.namelist = namelist = Namelist({
         'ozone_field_name':'ozone_1990',
         'dt_rad':4320.,
         'solday':90., #turn off seasonal cycle - diurnal by default
-        'co2_ppmv':348.0,
+        'co2_ppmv':1392.0,
         'store_intermediate_rad':True,
         'chunk_size': 16,
         'use_pressure_interp_for_half_levels':False,
@@ -164,7 +167,10 @@ exp.namelist = namelist = Namelist({
         'evaporation':True,  
         'depth': 10.0,                          #Depth of mixed layer used
         'albedo_value': 0.38,                   #Albedo value used      
-        'do_ape_sst': True,
+        'do_ape_sst': False, #False for slab ocean runs
+        'load_qflux' : True, #Do load q-flux field from an input file
+        'qflux_file_name': 'itcz_mip_q_flux', #Name of q-flux input file
+        'qflux_field_name': 'q_flux_slab-m40',
     },
 
     'qe_moist_convection_nml': {
