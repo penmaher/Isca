@@ -107,6 +107,7 @@ logical :: do_qflux         = .false. !mj
 logical :: do_warmpool      = .false. !mj
 logical :: do_read_sst      = .false. !mj
 logical :: do_sc_sst        = .false. !mj
+logical :: do_ape_sst       = .false. ! use the AquaPlanet Experiement (APE) sst profile.
 logical :: specify_sst_over_ocean_only = .false.
 character(len=256) :: sst_file
 character(len=256) :: land_option = 'none'
@@ -477,7 +478,7 @@ else
 endif
 
 !s begin surface heat capacity calculation
-   if((.not.do_sc_sst).or.(do_sc_sst.and.specify_sst_over_ocean_only))then
+   if((.not.do_sc_sst).or.(do_sc_sst.and.specify_sst_over_ocean_only).or.(.not.do_ape_sst))then
          land_sea_heat_capacity = depth*RHO_CP
     if(trim(land_option) .ne. 'input') then
          if ( trop_capacity .ne. depth*RHO_CP .or. np_cap_factor .ne. 1. ) then !s Lines above make trop_capacity=depth*RHO_CP if trop_capacity set to be < 0.
@@ -658,7 +659,32 @@ if(do_sc_sst) then !mj sst read from input file
      endif
 end if
 
-if ((.not.do_sc_sst).or.(do_sc_sst.and.specify_sst_over_ocean_only)) then
+if (do_ape_sst) then 
+    !
+    ! AquaPlanet Experiment protocol (APE) from 
+    ! Williams et al 2012 tech report: "The APE Atlas"
+    !
+    ! use analytic form for setting SST at each timestep.
+    ! see appendix equation 1 of Neale and Hoskins 2000
+    !     "A standard test for AGCMs including their 
+    !      physical parametrizations: I: the proposal"
+    ! using a constant longitude.
+    do j=js,je   
+        if ( (rad_lat_2d(1,j) .gt. -PI/3.) .and. (rad_lat_2d(1,j) .lt. PI/3.) ) then 
+            ! between 60N-60S
+            sst_new(:,j) = KELVIN+( 27.0*( 1. - (sin( 3./2. * rad_lat_2d(:,j) )**2 ) ))  
+            !write(6,*) 'SST profile', rad_lat_2d(1,j)*180/PI, ' j:', j, ' sst:', sst_new(1,j)
+        else
+            ! from 60N/S to pole
+            sst_new(:,j) = KELVIN
+            !write(6,*) 'SST is zero', rad_lat_2d(1,j)*180/PI, ' j:', j, ' sst:', sst_new(1,j)
+        endif
+    enddo
+    delta_t_surf = sst_new - t_surf
+    t_surf = sst_new
+endif
+
+if ((.not.do_sc_sst).or.(do_sc_sst.and.specify_sst_over_ocean_only).or.(.not.do_ape_sst)) then
   !s use the land_sea_heat_capacity calculated in mixed_layer_init
 
     ! Now update the mixed layer surface temperature using an implicit step
