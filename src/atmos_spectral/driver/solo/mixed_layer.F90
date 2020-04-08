@@ -477,7 +477,7 @@ else
 endif
 
 !s begin surface heat capacity calculation
-   if((.not.do_sc_sst).or.(do_sc_sst.and.specify_sst_over_ocean_only).or.(.not.do_ape_sst))then
+   if((.not.do_sc_sst).or.(do_sc_sst.and.specify_sst_over_ocean_only))then
          land_sea_heat_capacity = depth*RHO_CP
     if(trim(land_option) .ne. 'input') then
          if ( trop_capacity .ne. depth*RHO_CP .or. np_cap_factor .ne. 1. ) then !s Lines above make trop_capacity=depth*RHO_CP if trop_capacity set to be < 0.
