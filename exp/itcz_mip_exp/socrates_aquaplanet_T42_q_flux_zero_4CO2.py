@@ -4,7 +4,7 @@ import numpy as np
 
 from isca import SocratesCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE, GFDL_DATA
 
-NCORES = 16  #32 is max for gv3
+NCORES = 32  #32 is max for gv3
 base_dir = os.path.dirname(os.path.realpath(__file__))
 # a CodeBase can be a directory on the computer,
 # useful for iterative development
@@ -22,13 +22,17 @@ cb = SocratesCodeBase.from_directory(GFDL_BASE)
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
 
-project = 'ITCZ-MIP_aqua_sst_soc_low_res'
+project = 'ITCZ-MIP_aqua_sst_soc_low_res_take3'
 
-exp = Experiment(project+'_zero_4xco2', codebase=cb)
+exp_flag = 'zero'
+exp = Experiment('{}_{}_4CO2'.format(project,exp_flag), codebase=cb)
 exp.clear_rundir()
 
 inputfiles = [os.path.join(GFDL_BASE,'input/rrtm_input_files/ozone_1990.nc'),
               os.path.join(GFDL_DATA,project+'/itcz_mip_q_flux.nc')]
+
+print('Using the q-flux file: ', inputfiles[1])
+
 
 #Tell model how to write diagnostics
 diag = DiagTable()
@@ -233,7 +237,7 @@ if __name__=="__main__":
         exp.set_resolution('T42')
         exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=True)#, run_idb=True)
 
-        for i in range(2,385): #all runs should be 30 years + spin up
+        for i in range(2,384): #all runs should be 30 years + spin up
             exp.run(i, num_cores=NCORES, overwrite_data=True)
 
 

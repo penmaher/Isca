@@ -8,7 +8,7 @@ import subprocess
 
 start_time=time.time()
 base_dir='/scratch/pm366/OutputIsca'
-exp_name_list = ['ITCZ-MIP_aqua_sst_soc_low_res_m20_4CO2']
+exp_name_list = ['ITCZ-MIP_aqua_sst_soc_low_res_take3']
 avg_or_daily_list=['daily']
 start_file=1
 end_file=384
