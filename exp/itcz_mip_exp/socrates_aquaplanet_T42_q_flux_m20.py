@@ -4,7 +4,7 @@ import numpy as np
 
 from isca import SocratesCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE, GFDL_DATA
 
-NCORES =32  #32 is max for gv3
+NCORES =16  #32 is max for gv3
 base_dir = os.path.dirname(os.path.realpath(__file__))
 # a CodeBase can be a directory on the computer,
 # useful for iterative development
@@ -234,7 +234,7 @@ if __name__=="__main__":
 
         cb.compile(debug=False)
         exp.set_resolution('T42')
-        exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=True)#, run_idb=True)
+        exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=False)#, run_idb=True)
 
         for i in range(2,384): #all runs should be 30 years + spin up
             exp.run(i, num_cores=NCORES, overwrite_data=True)
