@@ -23,7 +23,7 @@ cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
-exp = Experiment('frierson_comp_um', codebase=cb)
+exp = Experiment('frierson_vanilla', codebase=cb)
 
 #Tell model how to write diagnostics
 diag = DiagTable()
@@ -195,11 +195,9 @@ exp.namelist = namelist = Namelist({
        }
 })
 
-resolution = 'T42', 25  #T85?
-
 #Lets do a run!
 if __name__=="__main__":
-    exp.set_resolution(*resolution)
-    exp.run(1, use_restart=False, num_cores=NCORES,overwrite_data=True)
-    for i in range(2,85):
-        exp.run(i, num_cores=NCORES)
+    exp.set_resolution('T42')
+    exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=True)#, run_idb=True)
+    for i in range(2,144): #2 year spin and 10 yr data
+        exp.run(i, num_cores=NCORES,overwrite_data=False)
