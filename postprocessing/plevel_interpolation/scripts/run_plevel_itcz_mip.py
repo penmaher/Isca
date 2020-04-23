@@ -8,10 +8,10 @@ import subprocess
 
 start_time=time.time()
 base_dir='/scratch/pm366/OutputIsca'
-exp_name_list = ['ITCZ-MIP_aqua_sst_soc_low_res_take3']
+exp_name_list = ['ITCZ-MIP_aqua_sst_soc_low_res_take3_p40_4CO2']
 avg_or_daily_list=['daily']
 start_file=1
-end_file=384
+end_file=383
 nfiles=(end_file-start_file)+1
 
 do_extra_averaging=False #If true, then 6hourly data is averaged into daily data using cdo

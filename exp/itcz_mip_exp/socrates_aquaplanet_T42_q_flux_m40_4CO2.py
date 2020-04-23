@@ -4,7 +4,7 @@ import numpy as np
 
 from isca import SocratesCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE, GFDL_DATA
 
-NCORES = 32  #32 is max for gv3
+NCORES = 16  #32 is max for gv3
 base_dir = os.path.dirname(os.path.realpath(__file__))
 # a CodeBase can be a directory on the computer,
 # useful for iterative development
