@@ -34,7 +34,7 @@ diag.add_file('atmos_daily', 1, 'days', time_units='days')
 diag.add_field('dynamics', 'ps', time_avg=True)
 diag.add_field('dynamics', 'bk')
 diag.add_field('dynamics', 'pk')
-diag.add_field('dynamics', 'zsurf', time_avg=True) 
+diag.add_field('dynamics', 'zsurf') 
 
 diag.add_field('dynamics',   'ucomp',             time_avg=True, files=['atmos_monthly'])
 diag.add_field('dynamics',   'vcomp',             time_avg=True, files=['atmos_monthly'])
@@ -46,12 +46,13 @@ diag.add_field('atmosphere', 'convection_rain',   time_avg=True)
 diag.add_field('atmosphere', 'condensation_rain', time_avg=True)
 diag.add_field('atmosphere', 'rh',                time_avg=True, files=['atmos_monthly'])
 #Fluxes for budget
-diag.add_field('mixed_layer','flux_lhe',          time_avg=True, files=['atmos_monthly']) #for evap
-diag.add_field('two_stream','flux_t',    time_avg=True, files=['atmos_monthly']) #SH
+diag.add_field('mixed_layer','flux_lhe',  time_avg=True, files=['atmos_monthly']) #for evap
+diag.add_field('mixed_layer','flux_t',    time_avg=True, files=['atmos_monthly']) #SH
 diag.add_field('two_stream','lwdn_sfc',   time_avg=True, files=['atmos_monthly']) #LWDS
 diag.add_field('two_stream','lwup_sfc',   time_avg=True, files=['atmos_monthly']) #LWUS
-diag.add_field('two_stream','olr',        time_avg=True, files=['atmos_monthly']) #LWUT (OLD)
-diag.add_field('two_stream','flux_sw',    time_avg=True, files=['atmos_monthly']) #needed for SWUS and SWUT
+diag.add_field('two_stream','olr',        time_avg=True, files=['atmos_monthly']) #LWUT
+#needed for SWUS and SWUT, output on model half levs
+diag.add_field('two_stream','flux_sw',    time_avg=True, files=['atmos_monthly']) #net = up - down, positive up
 diag.add_field('two_stream','swdn_sfc',   time_avg=True, files=['atmos_monthly']) #SWDS
 diag.add_field('two_stream','swdn_toa',   time_avg=True, files=['atmos_monthly']) #SWDT
 
@@ -189,5 +190,5 @@ exp.namelist = namelist = Namelist({
 if __name__=="__main__":
     exp.set_resolution('T42')
     exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=True)#, run_idb=True)
-    for i in range(2,144): #2 year spin and 10 yr data
+    for i in range(2,180+1): #5 year spin and 10 yr data
         exp.run(i, num_cores=NCORES,overwrite_data=True)
