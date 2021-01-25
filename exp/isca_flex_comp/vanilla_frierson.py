@@ -115,7 +115,7 @@ exp.namelist = namelist = Namelist({
         'tconst' : 285.,
         'prescribe_initial_dist':True,
         'evaporation':True,   
-        'depth': 20,                          #Depth of mixed layer used
+        'depth': 2.5,                          #Depth of mixed layer used
         'albedo_value': 0.31,                  #Albedo value used             
     },
 
@@ -190,5 +190,5 @@ exp.namelist = namelist = Namelist({
 if __name__=="__main__":
     exp.set_resolution('T42')
     exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=True)#, run_idb=True)
-    for i in range(2,180+1): #5 year spin and 10 yr data
+    for i in range(2,240+1): #10 year spin and 10 yr data
         exp.run(i, num_cores=NCORES,overwrite_data=True)
