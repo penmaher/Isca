@@ -13,7 +13,7 @@ base_dir='/scratch/pm366/OutputIsca'
 exp_name_list = ['frierson_vanilla']
 avg_or_daily_list=['monthly']
 start_file=1
-end_file=180
+end_file=240
 nfiles=(end_file-start_file)+1
 
 do_extra_averaging=False #If true, then 6hourly data is averaged into daily data using cdo
