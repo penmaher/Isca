@@ -4,7 +4,7 @@ import numpy as np
 
 from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
-NCORES = 16
+NCORES = 8
 base_dir = os.path.dirname(os.path.realpath(__file__))
 # a CodeBase can be a directory on the computer,
 # useful for iterative development
@@ -189,6 +189,6 @@ exp.namelist = namelist = Namelist({
 #Lets do a run!
 if __name__=="__main__":
     exp.set_resolution('T42')
-    exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=True)#, run_idb=True)
-    for i in range(2,240+1): #10 year spin and 10 yr data
-        exp.run(i, num_cores=NCORES,overwrite_data=True)
+    exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=False)#, run_idb=True)
+    for i in range(2,360+1): #10 year spin and 20 yr data
+        exp.run(i, num_cores=NCORES,overwrite_data=False)
