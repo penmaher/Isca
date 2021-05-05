@@ -10,10 +10,10 @@ import subprocess
 
 start_time=time.time()
 base_dir='/scratch/pm366/OutputIsca'
-exp_name_list = ['frierson_vanilla']
+exp_name_list = ['frierson_vanilla_sw_flux_out']
 avg_or_daily_list=['monthly']
 start_file=1
-end_file=360
+end_file=240
 nfiles=(end_file-start_file)+1
 
 do_extra_averaging=False #If true, then 6hourly data is averaged into daily data using cdo
@@ -62,8 +62,8 @@ elif level_set=='era_int':
 elif level_set=='flexum_levs':
     #for TOA fluxes I need model top which is 4.3 hPa in vanilla run
     #the last level is not 1000 as the interpolation script returns too many nans
-    plevs['monthly']=' -p "500 5000 10000 15000 20000 25000 30000 40000 50000 60000 70000 85000 92500 99500 99999"' 
-    plevs['daily']  =' -p "500 5000 10000 15000 20000 25000 30000 40000 50000 60000 70000 85000 92500 99500 99999"'
+    plevs['monthly']=' -p "500 5000 10000 15000 20000 25000 30000 40000 50000 60000 70000 85000 92500 100000"' 
+    plevs['daily']  =' -p "500 5000 10000 15000 20000 25000 30000 40000 50000 60000 70000 85000 92500 100000"'
 
     var_names['monthly']='-a height'
     var_names['daily']='-a height'

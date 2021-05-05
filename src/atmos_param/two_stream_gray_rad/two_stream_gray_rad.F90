@@ -124,6 +124,7 @@ real, allocatable, dimension(:,:,:) :: b, tdt_rad, tdt_solar
 real, allocatable, dimension(:,:,:) :: lw_up, lw_down, lw_flux, sw_up, sw_down, sw_flux, rad_flux
 real, allocatable, dimension(:,:,:) :: lw_tau, sw_tau, lw_dtrans
 real, allocatable, dimension(:,:)   :: olr, net_lw_surf, toa_sw_in, coszen, fracsun
+real, allocatable, dimension(:,:)   :: swup_sfc, swup_toa
 
 ! window parameterisation (RG, 2015)
 real, allocatable, dimension(:,:,:) :: lw_up_win, lw_down_win, lw_dtrans_win
@@ -153,7 +154,8 @@ namelist/two_stream_gray_rad_nml/ solar_constant, del_sol, &
 !==================================================================================
 !-------------------- diagnostics fields -------------------------------
 
-integer :: id_olr, id_swdn_sfc, id_swdn_toa, id_net_lw_surf, id_lwdn_sfc, id_lwup_sfc, &
+integer :: id_olr, id_swdn_sfc, id_swdn_toa, id_swup_sfc, id_swup_toa, &
+           id_net_lw_surf, id_lwdn_sfc, id_lwup_sfc, &
            id_tdt_rad, id_tdt_solar, id_flux_rad, id_flux_lw, id_flux_sw, id_coszen, id_fracsun, &
            id_lw_dtrans, id_lw_dtrans_win, id_sw_dtrans, id_co2
 
@@ -265,6 +267,8 @@ allocate (lw_tau_0         (ie-is+1, je-js+1))
 allocate (sw_tau_0         (ie-is+1, je-js+1))
 allocate (olr              (ie-is+1, je-js+1))
 allocate (net_lw_surf      (ie-is+1, je-js+1))
+allocate (swup_sfc         (ie-is+1, je-js+1))
+allocate (swup_toa         (ie-is+1, je-js+1))
 allocate (toa_sw_in        (ie-is+1, je-js+1))
 
 allocate (insolation       (ie-is+1, je-js+1))
@@ -302,14 +306,27 @@ end select
     register_diag_field ( mod_name, 'olr', axes(1:2), Time, &
                'outgoing longwave radiation', &
                'W/m2', missing_value=missing_value               )
+
     id_swdn_sfc = &
     register_diag_field ( mod_name, 'swdn_sfc', axes(1:2), Time, &
                'Absorbed SW at surface', &
                'W/m2', missing_value=missing_value               )
+
     id_swdn_toa = &
     register_diag_field ( mod_name, 'swdn_toa', axes(1:2), Time, &
                'SW flux down at TOA', &
                'W/m2', missing_value=missing_value               )
+
+    id_swup_sfc = &
+    register_diag_field ( mod_name, 'swup_sfc', axes(1:2), Time, &
+               'SW up at surface', &
+               'W/m2', missing_value=missing_value               )
+
+    id_swup_toa = &
+    register_diag_field ( mod_name, 'swup_toa', axes(1:2), Time, &
+               'SW flux up at TOA', &
+               'W/m2', missing_value=missing_value               )
+
     id_lwup_sfc = &
     register_diag_field ( mod_name, 'lwup_sfc', axes(1:2), Time, &
                'LW flux up at surface', &
@@ -730,6 +747,12 @@ end do
 olr         = lw_up(:,:,1)
 net_lw_surf = lw_flux(:, :, n+1)
 
+!SW fuxes surface and TOA fluxes  - note that for a standard frierson simulation
+!these two sw fluxes are identical, as there are no clouds or aerosols to
+!reflect or absorb.
+swup_toa = sw_up(:,:,1)
+swup_sfc = sw_up(:,:,n+1)
+
 !------- outgoing lw flux toa (olr) -------
 if ( id_olr > 0 ) then
    used = send_data ( id_olr, olr, Time_diag)
@@ -741,6 +764,14 @@ endif
 !------- net upward lw flux surface -------
 if ( id_net_lw_surf > 0 ) then
    used = send_data ( id_net_lw_surf, net_lw_surf, Time_diag)
+endif
+!------- upward sw flux surface -------
+if ( id_swup_sfc > 0 ) then
+   used = send_data ( id_swup_sfc, swup_sfc, Time_diag)
+endif
+!------- upward sw flux toa -------
+if ( id_swup_toa > 0 ) then
+   used = send_data ( id_swup_toa, swup_toa, Time_diag)
 endif
 !------- temperature tendency due to radiation ------------
 if ( id_tdt_rad > 0 ) then
