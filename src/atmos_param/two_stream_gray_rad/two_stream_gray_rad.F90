@@ -747,9 +747,7 @@ end do
 olr         = lw_up(:,:,1)
 net_lw_surf = lw_flux(:, :, n+1)
 
-!SW fuxes surface and TOA fluxes  - note that for a standard frierson simulation
-!these two sw fluxes are identical, as there are no clouds or aerosols to
-!reflect or absorb.
+!SW fuxes surface and TOA fluxes 
 swup_toa = sw_up(:,:,1)
 swup_sfc = sw_up(:,:,n+1)
 
